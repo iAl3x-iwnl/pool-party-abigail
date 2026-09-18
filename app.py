@@ -51,26 +51,37 @@ def init_db():
 # Inicializar base de datos
 init_db()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 @app.route('/rsvp', methods=['POST'])
 def rsvp():
-    nombre = request.form.get('nombre')
+    nombre = request.form.get('nombre', '').strip()
     asistira = request.form.get('asistira')
     
+    if not nombre:
+        flash("Por favor ingresa tu nombre.")
+        return redirect(url_for('index') + '#rsvp')
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO invitados (nombre, asistira) VALUES (%s, %s)', (nombre, asistira))
+        
+        # Verificamos si el nombre ya existe en la base de datos
+        cursor.execute('SELECT id FROM invitados WHERE LOWER(nombre) = LOWER(%s)', (nombre,))
+        existente = cursor.fetchone()
+        
+        if existente:
+            # Si ya existe, actualizamos su asistencia y fecha
+            cursor.execute('UPDATE invitados SET asistira = %s, fecha_registro = CURRENT_TIMESTAMP WHERE LOWER(nombre) = LOWER(%s)', (asistira, nombre))
+            flash("¡Tu registro ha sido actualizado con éxito!")
+        else:
+            # Si es nuevo, lo insertamos normal
+            cursor.execute('INSERT INTO invitados (nombre, asistira) VALUES (%s, %s)', (nombre, asistira))
+            flash("¡Gracias por registrar tu respuesta!")
+            
         conn.commit()
         cursor.close()
         conn.close()
-        flash("¡Gracias por registrar tu respuesta!")
     except Exception as e:
-        # Esto te mostrará el error exacto en la página web para saber qué campo falló
-        flash(f"Error detallado de BD: {e}")
+        flash(f"Error al guardar: {e}")
         
     return redirect(url_for('index') + '#rsvp')
 
@@ -123,7 +134,12 @@ def admin():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        cursor.execute('SELECT * FROM invitados ORDER BY fecha_registro DESC')
+        # Esta consulta agrupa por nombre para mostrar una sola vez a cada invitado con su última respuesta
+        cursor.execute('''
+            SELECT DISTINCT ON (LOWER(nombre)) id, nombre, asistira, fecha_registro 
+            FROM invitados 
+            ORDER BY LOWER(nombre), fecha_registro DESC
+        ''')
         invitados = cursor.fetchall()
         
         cursor.execute('SELECT * FROM regalos ORDER BY fecha_registro DESC')
