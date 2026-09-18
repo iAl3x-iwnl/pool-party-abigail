@@ -17,37 +17,41 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True) 
 
+# --- CONEXIÓN A NEON.TECH ---
 def get_db_connection():
+    if not DATABASE_URL:
+        raise ValueError("La variable de entorno DATABASE_URL no está configurada.")
     return psycopg2.connect(DATABASE_URL)
 
 def init_db():
-    if not DATABASE_URL:
-        print("Esperando DATABASE_URL...")
-        return
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # PostgreSQL usa SERIAL en lugar de AUTOINCREMENT
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS invitados (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(255) NOT NULL,
-            asistira VARCHAR(50) NOT NULL,
-            fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS regalos (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(255) NOT NULL,
-            archivo VARCHAR(255) NOT NULL,
-            fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS invitados (
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(255) NOT NULL,
+                asistira VARCHAR(50) NOT NULL,
+                fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS regalos (
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(255) NOT NULL,
+                archivo VARCHAR(255) NOT NULL,
+                fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("Base de datos inicializada correctamente.")
+    except Exception as e:
+        print("Aviso en la base de datos durante el arranque:", e)
 
+# Llamamos a la función de manera segura
+init_db()
 # Intentamos crear las tablas al iniciar la aplicación
 try:
     init_db()
