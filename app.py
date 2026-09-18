@@ -51,6 +51,10 @@ def init_db():
 # Inicializar base de datos
 init_db()
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/rsvp', methods=['POST'])
 def rsvp():
     nombre = request.form.get('nombre', '').strip()
@@ -64,16 +68,14 @@ def rsvp():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Verificamos si el nombre ya existe en la base de datos
+        # Evitar duplicados: actualiza si ya existe el nombre
         cursor.execute('SELECT id FROM invitados WHERE LOWER(nombre) = LOWER(%s)', (nombre,))
         existente = cursor.fetchone()
         
         if existente:
-            # Si ya existe, actualizamos su asistencia y fecha
             cursor.execute('UPDATE invitados SET asistira = %s, fecha_registro = CURRENT_TIMESTAMP WHERE LOWER(nombre) = LOWER(%s)', (asistira, nombre))
             flash("¡Tu registro ha sido actualizado con éxito!")
         else:
-            # Si es nuevo, lo insertamos normal
             cursor.execute('INSERT INTO invitados (nombre, asistira) VALUES (%s, %s)', (nombre, asistira))
             flash("¡Gracias por registrar tu respuesta!")
             
@@ -134,7 +136,7 @@ def admin():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Esta consulta agrupa por nombre para mostrar una sola vez a cada invitado con su última respuesta
+        # Muestra una sola vez a cada invitado con su última respuesta en Neon
         cursor.execute('''
             SELECT DISTINCT ON (LOWER(nombre)) id, nombre, asistira, fecha_registro 
             FROM invitados 
