@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Asistencia - Abigail</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <div class="admin-container">
+        <h1>Panel de Administrador</h1>
+        
+        <!-- TABLA DE ASISTENCIA -->
+        <h2 style="color: #00bcd4; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-top: 30px;">Confirmaciones de Asistencia</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Asistencia</th>
+                    <th>Fecha de Registro</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in invitados %}
+                <tr>
+                    <td>{{ inv[1] }}</td>
+                    <td class="{% if inv[2] == 'Si' %}si{% else %}no{% endif %}">{{ inv[2] }}</td>
+                    <td>{{ inv[3] }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" style="text-align: center;">Nadie ha confirmado aún.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- NUEVA TABLA DE REGALOS (YAPE) -->
+        <h2 style="color: #00bcd4; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-top: 50px;">Regalos / Comprobantes Yape</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>De parte de</th>
+                    <th>Comprobante</th>
+                    <th>Fecha de Envío</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in regalos %}
+                <tr>
+                    <td>{{ reg[1] }}</td>
+                    <!-- Botón para ver la foto en una pestaña nueva -->
+                    <td>
+                        <a href="{{ url_for('static', filename='comprobantes/' ~ reg[2]) }}" target="_blank" style="background: #ff00de; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 0.9em;">Ver Imagen 👁️</a>
+                    </td>
+                    <td>{{ reg[3] }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" style="text-align: center;">Aún no han enviado regalitos.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/" class="btn-volver">⬅ Volver a la Invitación</a>
+        </div>
+    </div>
+</body>
+</html>

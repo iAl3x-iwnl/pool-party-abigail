@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis 15 Años - Pool Party</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="burbujas">
+        <div class="burbuja"></div><div class="burbuja"></div><div class="burbuja"></div>
+        <div class="burbuja"></div><div class="burbuja"></div><div class="burbuja"></div>
+    </div>
+
+    <header class="hero">
+        <h1>¡Mis 15 Años!</h1>
+        <h2>Pool Party de Abigail</h2>
+    </header>
+
+    <main>
+        <!-- NUEVO: SECCIÓN DEL TEMPORIZADOR -->
+        <section class="contador-section animar-seccion">
+            <h3>¡Falta muy poco para mi cumpleaños!</h3>
+            <p style="font-size: 0.9em; margin-bottom: 15px;">La fiesta es el 3, pero mi cumple oficial es el 5 de octubre 🎂</p>
+            <div class="contador-container">
+                <div class="caja-tiempo"><span id="dias">00</span><p>Días</p></div>
+                <div class="caja-tiempo"><span id="horas">00</span><p>Hrs</p></div>
+                <div class="caja-tiempo"><span id="min">00</span><p>Min</p></div>
+                <div class="caja-tiempo"><span id="seg">00</span><p>Seg</p></div>
+            </div>
+        </section>
+
+        <section class="detalles animar-seccion">
+            <h3>Detalles del Evento</h3>
+            <p><strong>Lugar:</strong> Mystic Club</p>
+            <img src="{{ url_for('static', filename='img/local.jpg') }}" alt="Fachada Mystic Club" class="foto-local" onerror="this.src='https://placehold.co/600x300?text=Foto+del+Local'">
+            <p><strong>Fecha:</strong> Sábado, 3 de octubre de 2026</p>
+            <p><strong>Hora:</strong> 6:00 PM</p>
+            <p class="nota">¡Prepara tu mejor traje de baño, protector solar y muchas ganas de celebrar! 🌊🌞</p>
+        </section>
+
+        <section class="fotos animar-seccion">
+            <h3>Momentos Especiales</h3>
+            <div class="galeria">
+                <img src="{{ url_for('static', filename='img/foto1.jpeg') }}" alt="Abigail 1" onerror="this.src='https://placehold.co/300x400?text=Foto+1'">
+                <img src="{{ url_for('static', filename='img/foto2.jpeg') }}" alt="Abigail 2" onerror="this.src='https://placehold.co/300x400?text=Foto+2'">
+            </div>
+        </section>
+
+        <section id="rsvp" class="rsvp animar-seccion">
+            <h3>Confirma tu Asistencia</h3>
+            <p>La fecha límite para confirmar es el <strong>30 de septiembre</strong>.</p>
+            
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="alerta">{{ messages[0] }}</div>
+              {% endif %}
+            {% endwith %}
+
+            <!-- MENSAJE QUE SALDRÁ CUANDO SE ACABE EL TIEMPO -->
+            <div id="mensaje-cierre" style="display: none; margin-top: 20px;">
+                <h4 style="color: #ff00de;">¡El tiempo de confirmación ha terminado! 🚫</h4>
+                <p>Ya no se aceptan más registros de asistencia. ¡Pero aún puedes dejar tu regalito abajo! 👇</p>
+            </div>
+
+            <!-- FORMULARIO DE ASISTENCIA CON ID -->
+            <form id="form-rsvp" action="/rsvp" method="POST">
+                <input type="text" name="nombre" placeholder="Tu nombre y apellido" required>
+                <select name="asistira" required>
+                    <option value="" disabled selected>¿Asistirás a la fiesta?</option>
+                    <option value="Si">¡Sí, ahí estaré!</option>
+                    <option value="No">No podré asistir :(</option>
+                </select>
+                <button type="submit">Enviar Confirmación</button>
+            </form>
+        </section>
+
+        <section id="regalos" class="regalos animar-seccion">
+            <h3>Mesa de Regalos</h3>
+            <p>El mejor regalo es compartir este día conmigo. Pero si deseas tener un detalle, escanea el QR.</p>
+            
+            <div class="qr-container">
+                <img src="{{ url_for('static', filename='img/qr.jpeg') }}" alt="Código QR Regalos" onerror="this.src='https://placehold.co/200x200?text=Tu+QR+Aqui'">
+            </div>
+
+            <div class="yape-upload">
+                <h4>¡Envía tu comprobante! 💸</h4>
+                <p style="font-size: 0.9em; margin-bottom: 15px;">¿Ya yapeaste? Sube tu captura aquí para agradecerte.</p>
+                
+                <form action="/subir_yape" method="POST" enctype="multipart/form-data">
+                    <!-- AQUI ESTÁ EL CUADRO DE TEXTO CLARITO -->
+                    <label style="text-align: left; font-size: 0.9em; color: #00ffff;">Ingresa tu Nombre y Apellido:</label>
+                    <input type="text" name="nombre_yape" placeholder="Ej: Juan Pérez" required>
+                    
+                    <label style="text-align: left; font-size: 0.9em; color: #00ffff; margin-top: 10px;">Adjunta la captura de pantalla:</label>
+                    <input type="file" name="comprobante" accept="image/*" required class="input-file">
+                    
+                    <button type="submit" class="btn-yape">Enviar Regalo 🎁</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Con cariño, Abigail.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
