@@ -18,6 +18,7 @@
                     <th>Nombre</th>
                     <th>Asistencia</th>
                     <th>Fecha de Registro</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +27,13 @@
                     <td>{{ inv[1] }}</td>
                     <td class="{% if inv[2] == 'Si' %}si{% else %}no{% endif %}">{{ inv[2] }}</td>
                     <td>{{ inv[3] }}</td>
+                    <td>
+    <form action="{{ url_for('eliminar_invitado', id=invitado[0]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar a este invitado?');">
+        <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+            Borrar
+        </button>
+    </form>
+</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="3" style="text-align: center;">Nadie ha confirmado aún.</td></tr>

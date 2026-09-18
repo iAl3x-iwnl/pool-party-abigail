@@ -154,5 +154,31 @@ def admin():
         
     return render_template('admin.html', invitados=invitados, regalos=regalos)
 
+# --- NUEVA RUTA PARA BORRAR INVITADOS ---
+@app.route('/eliminar_invitado/<int:id>', methods=['POST'])
+def eliminar_invitado(id):
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('login'))
+        
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Elimina todas las entradas asociadas a ese nombre (por si había duplicados antiguos)
+        cursor.execute('SELECT nombre FROM invitados WHERE id = %s', (id,))
+        resultado = cursor.fetchone()
+        
+        if resultado:
+            nombre = resultado[0]
+            cursor.execute('DELETE FROM invitados WHERE LOWER(nombre) = LOWER(%s)', (nombre,))
+            conn.commit()
+            
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error al eliminar invitado: {e}")
+        
+    return redirect(url_for('admin'))
+
 if __name__ == '__main__':
     app.run(debug=True)
