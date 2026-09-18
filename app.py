@@ -69,7 +69,8 @@ def rsvp():
         conn.close()
         flash("¡Gracias por registrar tu respuesta!")
     except Exception as e:
-        flash("Hubo un error al guardar. Intenta de nuevo.")
+        # Esto te mostrará el error exacto en la página web para saber qué campo falló
+        flash(f"Error detallado de BD: {e}")
         
     return redirect(url_for('index') + '#rsvp')
 
