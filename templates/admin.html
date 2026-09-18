@@ -28,15 +28,17 @@
                     <td class="{% if inv[2] == 'Si' %}si{% else %}no{% endif %}">{{ inv[2] }}</td>
                     <td>{{ inv[3] }}</td>
                     <td>
-    <form action="{{ url_for('eliminar_invitado', id=invitado[0]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar a este invitado?');">
-        <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
-            Borrar
-        </button>
-    </form>
-</td>
+                        <!-- AQUÍ ESTÁ LA CORRECCIÓN: usamos inv[0] -->
+                        <form action="{{ url_for('eliminar_invitado', id=inv[0]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar a este invitado?');">
+                            <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                                Borrar
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="3" style="text-align: center;">Nadie ha confirmado aún.</td></tr>
+                <!-- AQUÍ ESTÁ LA CORRECCIÓN: colspan="4" -->
+                <tr><td colspan="4" style="text-align: center;">Nadie ha confirmado aún.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -55,7 +57,6 @@
                 {% for reg in regalos %}
                 <tr>
                     <td>{{ reg[1] }}</td>
-                    <!-- Botón para ver la foto en una pestaña nueva -->
                     <td>
                         <a href="{{ url_for('static', filename='comprobantes/' ~ reg[2]) }}" target="_blank" style="background: #ff00de; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 0.9em;">Ver Imagen 👁️</a>
                     </td>
